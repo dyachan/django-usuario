@@ -6,7 +6,12 @@ from django.core.exceptions import FieldError
 class Usuario(models.Model):
   """ Clase que extiende funcionalidades de la clase User.
 
-  Este modelo pretende agregar funcionalidades al usuario que viene facilitado por django. Este archivo sobreescribe el método __getattr__ de la clase User de forma tal que se pueda llamar a los atributos del modelo de esta clase, o sus subclases, desde una instancia de User (en caso que hubiere), recordando siempre que la relación entre esta clase y la User proporcionada por django es uno a uno.
+  Este modelo pretende agregar funcionalidades al usuario que viene facilitado
+  por django. Este archivo sobreescribe el método __getattr__ de la clase User
+  de forma tal que se pueda llamar a los atributos del modelo de esta clase, o
+  sus subclases, desde una instancia de User (en caso que hubiere), recordando
+  siempre que la relación entre esta clase y la User proporcionada por django es
+  uno a uno.
 
   @type nombre: string
   @type paterno: string
@@ -43,7 +48,8 @@ class Usuario(models.Model):
         setattr(self, key, value)
 
   def save(self, *args, **kwargs):
-    """ Se sobreescribe el método salvar para poder gestionar la creación de un User en caso que no se haya creado y enlazado uno antes.
+    """ Se sobreescribe el método salvar para poder gestionar la creación de un
+    User en caso que no se haya creado y enlazado uno antes.
     """
     if not hasattr(self, 'user') or self.user is None:
       if hasattr(self, 'password') and hasattr(self, 'username'):
@@ -64,7 +70,8 @@ class Usuario(models.Model):
       else:
         raise FieldError("Debe ingresar los campos password y username si desea automatizar la creación de un User.")
     else:
-      ''' Para que la siguiente comparación tenga sentido la clase Usuario NO debe ser abstracta (para django). '''
+      ''' Para que la siguiente comparación tenga sentido la clase Usuario NO
+      debe ser abstracta (para django). '''
       if self.user.usuario.pk != self.pk:
         raise FieldError("Debe ingresar User que no tenga relación con ningún Usuario existente.")
 
@@ -87,7 +94,7 @@ def _new__getattr__(self, name):
   names += [n for n in Usuario.__dict__.keys() if not n.startswith('_')] # metodos
   for sub_u in Usuario.__subclasses__():
     names += sub_u._meta.get_all_field_names() # atributos
-    names += [n for n in sub_u.__dict__.keys() if not n.startswith('_')]
+    names += [n for n in sub_u.__dict__.keys() if not n.startswith('_')] # metodos
 
   if name in names:
     i = _get_instance(self)

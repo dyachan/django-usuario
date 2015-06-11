@@ -7,7 +7,7 @@ Usuario es una extensión al modelo User de Django que permite el usar una insta
 Quick start
 -----------
 
-1. Agregue "usuario" a su INSTALLED_APPS en el archivo setting de la siquiente forma::
+1. Agregue "usuario" a su INSTALLED_APPS en el archivo settings de la siquiente forma::
 
     INSTALLED_APPS = (
         ...
@@ -17,21 +17,22 @@ Quick start
 
 2. Al interior de la carpeta /MEDIA/usuarios/ (crearla si no existe) agregar una imagen llamada "Anonimo.png" que servirá de imagen por defecto para un usuario
 
-3. Ejecutar `python manage.py migrate` para crear el modelo Usuario.
+3. Ejecutar `python manage.py makemigrations` y `python manage.py migrate` para crear el modelo Usuario.
 
 OPCIONAL
 --------
 
 1. Si quiere extender más la clase Usuario simplemente debe crear otro modelo que se herede de esa clase tal como se muestra a continuación::
 
+    from usuario.models import Usuario
     class NuevoUsuario(Usuario):
         campo_nuevo = models.CharField(max_length=50, null=True)
         def get_campo_nuevo(self):
             return self.campo_nuevo
 
-2. Ejecutar `python manage.py migrate` para crear el modelo NuevoUsuario.
+2. Ejecutar `python manage.py makemigrations` y `python manage.py migrate` para crear el modelo NuevoUsuario.
 
-3. Podrá crear nuevas instancias de su modelo::
+3. Podrá crear nuevas instancias de su modelo (recordar que los campos obligatorios de User deben ser llenados)::
 
     >>> u = NuevoUsuario.objects.create(username="a", password="b", nombre="c", campo_nuevo="d")
 
