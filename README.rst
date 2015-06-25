@@ -45,3 +45,12 @@ OPCIONAL
     <<< 'd'
     >>> u.get_nuevo_campo()
     <<< 'd'
+
+CHANGELOG
+---------
+
+v0.2
+	Creación de claves de usuario con el método 'set_password'
+
+v0.1
+	Proyecto inicial

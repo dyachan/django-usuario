@@ -9,14 +9,14 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-usuario',
-    version='0.1',
+    version='0.2',
     packages=['usuario'],
     include_package_data=True,
     license='MIT License',
     description='Extension to model User.',
     long_description=README,
     keywords = "django user",
-    url='',
+    url='https://github.com/dyachan/django-usuario',
     author='Diego Yachan',
     author_email='diego.yachan@gmail.com',
     classifiers=[
