@@ -60,13 +60,16 @@ class Usuario(models.Model):
         if not hasattr(self, 'email'):
           self.email = ""
 
-        self.user = User.objects.create(
+        user = User(
           username=self.username,
           first_name=self.first_name,
           last_name=self.last_name,
-          email=self.email,
-          password=self.password
+          email=self.email
         )
+        user.set_password(self.password)
+        user.save()
+        self.user = user
+
       else:
         raise FieldError("Debe ingresar los campos password y username si desea automatizar la creación de un User.")
     else:
