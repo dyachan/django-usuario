@@ -49,6 +49,9 @@ OPCIONAL
 CHANGELOG
 ---------
 
+v0.3
+	Permitida la guardar la instancia de User cuando se guarda la instancia de Usuario
+
 v0.2
 	Creación de claves de usuario con el método 'set_password'
 
