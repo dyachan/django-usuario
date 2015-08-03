@@ -43,6 +43,32 @@ class test_usuario(TestCase):
 #      nombre2="uuu")
 #    self.assertEqual(u.user.nombre_completo2(), "eee uuu rrr ttt")
 
+  def test_al_modificar_Usuario_sin_modificar_User(self):
+    u = Usuario.objects.create(
+      username="qqq",
+      password="www",
+      nombre="eee",
+      paterno="rrr",
+      materno="ttt")
+
+    u.user.username = "yyy"
+    u.save(UserSave=False)
+
+    self.assertEqual(User.objects.all()[0].username, "qqq")
+
+  def test_al_modificar_Usuario_y_modificar_User(self):
+    u = Usuario.objects.create(
+      username="qqq",
+      password="www",
+      nombre="eee",
+      paterno="rrr",
+      materno="ttt")
+
+    u.user.username = "yyy"
+    u.save()
+
+    self.assertEqual(User.objects.all()[0].username, "yyy")
+
   def test_error_al_dar_user_con_otro_usuario_asignado(self):
     u = Usuario.objects.create(
       username="qqq",

@@ -46,15 +46,22 @@ class Usuario(models.Model):
       if value is not None:
         setattr(self, key, value)
 
-  def save(self, *args, **kwargs):
+  def save(self, UserSave=True, *args, **kwargs):
     """ Se sobreescribe el método salvar para poder gestionar la creación de un
     User en caso que no se haya creado y enlazado uno antes.
+    Se puede elegir si se desea guardar los cambios efectuados en user.
     """
 
     if hasattr(self, 'user') and self.user is not None:
       # caso que se le asigna un usuario determinado
-      if hasattr(self.user, 'usuario') and self.user.usuario is not None and self.user.usuario.pk != self.pk:
-        raise IntegrityError("Debe ingresar User que no tenga relación con ningún Usuario existente.")
+      if hasattr(self.user, 'usuario') and self.user.usuario is not None:
+        # caso que se le haya asignado un usuario
+        if self.user.usuario.pk != self.pk:
+          # caso el usuario asignado ya tiene a otro
+          raise IntegrityError("Debe ingresar User que no tenga relación con ningún Usuario existente.")
+        else:
+          # en este caso se debe revisar si hay que modificar User
+          pass
     else:
       # caso que No tenga un usuario asignado de antemano
       if not hasattr(self, 'password') or not hasattr(self, 'username'):
@@ -79,8 +86,14 @@ class Usuario(models.Model):
         user.save()
         self.user = user
 
-    # finalmente se guarda en todos los casos
+        # eliminar los atributos que no se debiesen estar en la instancia
+        for name in ['username', 'password', 'first_name', 'last_name', 'email']:
+          delattr(self, name)
+
+    # se guarda  Usuario y User en caso que se haya modificado
     super().save(*args, **kwargs)
+    if UserSave:
+      self.user.save()
 
 def _get_instance(user):
   """ función que busca la instancia de la clase hija más baja de Usuario y que
