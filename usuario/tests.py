@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase
 from django.contrib.auth.models import User
+from django.db import IntegrityError
 
 from usuario.models import Usuario
 #from usuario.models import NuevoUsuario
@@ -41,6 +42,15 @@ class test_usuario(TestCase):
 #      materno="ttt",
 #      nombre2="uuu")
 #    self.assertEqual(u.user.nombre_completo2(), "eee uuu rrr ttt")
+
+  def test_error_al_no_dar_atributos_de_user(self):
+    u = Usuario(
+      nombre="eee",
+      paterno="rrr",
+      materno="ttt")
+
+    self.assertRaises(IntegrityError, u.save)
+
 
   def test_generar_nombre_completo_por_usuario(self):
     u = Usuario(

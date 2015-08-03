@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth.models import User
-from django.db import models
-from django.core.exceptions import FieldError
+from django.db import models, IntegrityError
 
 class Usuario(models.Model):
   """ Clase que extiende funcionalidades de la clase User.
@@ -51,8 +50,13 @@ class Usuario(models.Model):
     """ Se sobreescribe el método salvar para poder gestionar la creación de un
     User en caso que no se haya creado y enlazado uno antes.
     """
+
     if not hasattr(self, 'user') or self.user is None:
-      if hasattr(self, 'password') and hasattr(self, 'username'):
+      # caso que No tenga un usuario asignado de antemano
+      if not hasattr(self, 'password') or not hasattr(self, 'username'):
+        # caso que no tenga los atributos password y/o username
+        raise IntegrityError("Debe ingresar los campos password y username si desea automatizar la creación de un User.")
+      else:
         if not hasattr(self, 'first_name'):
           self.first_name = ""
         if not hasattr(self, 'last_name'):
@@ -69,9 +73,6 @@ class Usuario(models.Model):
         user.set_password(self.password)
         user.save()
         self.user = user
-
-      else:
-        raise FieldError("Debe ingresar los campos password y username si desea automatizar la creación de un User.")
     else:
       ''' Para que la siguiente comparación tenga sentido la clase Usuario NO
       debe ser abstracta (para django). '''
