@@ -51,7 +51,11 @@ class Usuario(models.Model):
     User en caso que no se haya creado y enlazado uno antes.
     """
 
-    if not hasattr(self, 'user') or self.user is None:
+    if hasattr(self, 'user') and self.user is not None:
+      # caso que se le asigna un usuario determinado
+      if hasattr(self.user, 'usuario') and self.user.usuario is not None and self.user.usuario.pk != self.pk:
+        raise IntegrityError("Debe ingresar User que no tenga relación con ningún Usuario existente.")
+    else:
       # caso que No tenga un usuario asignado de antemano
       if not hasattr(self, 'password') or not hasattr(self, 'username'):
         # caso que no tenga los atributos password y/o username
@@ -70,21 +74,22 @@ class Usuario(models.Model):
           last_name=self.last_name,
           email=self.email
         )
+        # almacenar password de forma segura
         user.set_password(self.password)
         user.save()
         self.user = user
-    else:
-      ''' Para que la siguiente comparación tenga sentido la clase Usuario NO
-      debe ser abstracta (para django). '''
-      if self.user.usuario.pk != self.pk:
-        raise FieldError("Debe ingresar User que no tenga relación con ningún Usuario existente.")
 
+    # finalmente se guarda en todos los casos
     super().save(*args, **kwargs)
 
 def _get_instance(user):
+  """ función que busca la instancia de la clase hija más baja de Usuario y que
+  esté enlazada con el usuario dado por parámetro.
+  """
+
   inst = None
   f = Usuario.objects.filter(user=user)
-  if f.count() == 1: # siempre debiese ser 1 ó 0.
+  if f.exists():
     inst = f[0]
     for sub_u in Usuario.__subclasses__():
       if hasattr(inst, sub_u.__name__.lower()):
@@ -93,9 +98,14 @@ def _get_instance(user):
   return inst
 
 def _new__getattr__(self, name):
+  """ función que sobreescribirá el método del mismo nombre de la clase User
+  """
+
   # recolectar los nombres de atributos y métodos válidos
   names = Usuario._meta.get_all_field_names() # atributos
   names += [n for n in Usuario.__dict__.keys() if not n.startswith('_')] # metodos
+
+  # recolectar los nombres de los atributos y métodos válidos de las subclases
   for sub_u in Usuario.__subclasses__():
     names += sub_u._meta.get_all_field_names() # atributos
     names += [n for n in sub_u.__dict__.keys() if not n.startswith('_')] # metodos
@@ -104,7 +114,7 @@ def _new__getattr__(self, name):
     i = _get_instance(self)
     if i != None:
       return getattr(i, name)
-  raise AttributeError
+  raise AttributeError("'User' object has no attribute '%s'" % name)
 
 setattr(User, '__getattr__', _new__getattr__)
 

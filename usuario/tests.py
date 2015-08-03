@@ -43,6 +43,15 @@ class test_usuario(TestCase):
 #      nombre2="uuu")
 #    self.assertEqual(u.user.nombre_completo2(), "eee uuu rrr ttt")
 
+  def test_error_al_dar_user_con_otro_usuario_asignado(self):
+    u = Usuario.objects.create(
+      username="qqq",
+      password="www",
+      nombre="eee",
+      paterno="rrr",
+      materno="ttt")
+    self.assertRaises(IntegrityError, Usuario.objects.create, user=u.user)
+
   def test_error_al_no_dar_atributos_de_user(self):
     u = Usuario(
       nombre="eee",
@@ -50,7 +59,6 @@ class test_usuario(TestCase):
       materno="ttt")
 
     self.assertRaises(IntegrityError, u.save)
-
 
   def test_generar_nombre_completo_por_usuario(self):
     u = Usuario(
