@@ -49,6 +49,9 @@ OPCIONAL
 CHANGELOG
 ---------
 
+v0.4
+	Creado formulario que crea y edita usuarios
+
 v0.3
 	Permitida la guardar la instancia de User cuando se guarda la instancia de Usuario
 
